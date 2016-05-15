@@ -18,14 +18,13 @@ Set-PsLiskConfiguration						v0.1.1.0 + Help
 
 # Accounts #-------------------------------------------------------------------------
 
-Get-PsLiskAccountsDelegates					v0.1.1.0 + Help
-
-Get-PsLiskAccountBalance					N/A (Priority 6)
-Get-PsLiskAccountPublickey					N/A (Priority 10) ( Integrate Generate public key ? )
 Get-PsLiskAccount							N/A (Priority 10)
+Get-PsLiskAccountBalance					N/A (Priority 6)
 Get-PsLiskAccountDelegate					N/A (Priority 10)
+Get-PsLiskAccountPublicKey					N/A (Priority 10) ( Integrate Generate public key ? )
+Get-PsLiskAccountVote						v0.1.1.0 + Help
 
-Open-PsLiskAccount							N/A (Priority 10)
+Open-PsLiskAccount							v0.1.1.0
 Vote-PsLiskDelegate							N/A (Priority 10)
 
 # Loader #---------------------------------------------------------------------------
@@ -184,6 +183,77 @@ Function Set-PsLiskConfiguration
 ### API Call: Accounts
 ##########################################################################################################################################################################################################
 
+Function Get-PsLiskAccount
+{
+}
+
+##########################################################################################################################################################################################################
+
+<#
+.SYNOPSIS
+	API Call: Get the balance of an account.
+	
+.DESCRIPTION
+	Return an ? for a given address.
+	
+	"balance": "Balance of account",
+	"unconfirmedBalance": "Unconfirmed balance of account"
+	
+.PARAMETER Address
+
+.EXAMPLE
+	Get-PsLiskAccountBalance -Address 10829835517993670808L
+#>
+
+Function Get-PsLiskAccountBalance
+{
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory = $True)] [string] $Address
+        )
+	
+	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/getBalance/?address='+$Address )
+	if( $Output.success -eq $True )
+	{
+		$Output | Select-Object -Property Balance, UnconfirmedBalance
+	}
+}
+
+##########################################################################################################################################################################################################
+
+Function Get-PsLiskAccountDelegate
+{
+}
+
+##########################################################################################################################################################################################################
+
+<#
+.SYNOPSIS
+	API Call: Get account public key.
+	
+.DESCRIPTION
+	Get the public key of an account. If the account does not exist the API call will return $NULL.
+	
+.PARAMETER Address
+	Address of account.
+	
+.EXAMPLE
+	Get-PsLiskAccountPublicKey -Address 10829835517993670808L
+#>
+
+Function Get-PsLiskAccountPublicKey
+{
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory = $True)] [string] $Address
+        )
+	
+	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/getPublicKey?address='+$Address )
+	if( $Output.success -eq $True ) { $Output.publicKey }
+}
+
+##########################################################################################################################################################################################################
+
 <#
 .SYNOPSIS
 	API Call: Get votes by account address.
@@ -194,10 +264,10 @@ Function Set-PsLiskConfiguration
 .PARAMETER Address
 
 .EXAMPLE
-	Get-PsLiskAccountsDelegates -Address 10829835517993670808L
+	Get-PsLiskAccountVote -Address 10829835517993670808L
 #>
 
-Function Get-PsLiskAccountsDelegates
+Function Get-PsLiskAccountVote
 {
     [CmdletBinding()]
     Param(
@@ -208,15 +278,47 @@ Function Get-PsLiskAccountsDelegates
 	if( $Output.success -eq $True ) { $Output.delegates }
 }
 
-<#
-Get-PsLiskAccountBalance					N/A (Priority 6)
-Get-PsLiskAccountPublickey					N/A (Priority 10) ( Integrate Generate public key ? )
-Get-PsLiskAccount							N/A (Priority 10)
-Get-PsLiskAccountDelegate					N/A (Priority 10)
+##########################################################################################################################################################################################################
 
-Open-PsLiskAccount							N/A (Priority 10)
-Vote-PsLiskDelegate							N/A (Priority 10)
+<#
+.SYNOPSIS
+	API Call: Get information about an account.
+	
+.DESCRIPTION
+	Get information about an account. Return an object with the following properties:
+
+		"address": "Address of account. String",
+		"unconfirmedBalance": "Unconfirmed balance of account. Integer",
+		"balance": "Balance of account. Integer",
+		"publicKey": "Public key of account. Hex",
+		"unconfirmedSignature": "If account enabled second signature, but it's still not confirmed. Boolean: true or false",
+		"secondSignature": "If account enabled second signature. Boolean: true or false",
+		"secondPublicKey": "Second signature public key. Hex",
+		"username": "Username of account."
+	
+.PARAMETER Secret
+	Secret key of account.
+	
+.EXAMPLE
+	Open-PsLiskAccount -Secret 'soon control wild distance sponsor decrease cheap example avoid route ten pudding'
 #>
+
+Function Open-PsLiskAccount
+{
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory = $True)] [string] $Secret
+        )
+	
+	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/open/?secret='+$Secret )
+	if( $Output.success -eq $True ) { $Output.account }
+}
+
+##########################################################################################################################################################################################################
+
+Function Vote-PsLiskDelegate
+{
+}
 
 ##########################################################################################################################################################################################################
 ### API Call: Loader
@@ -517,7 +619,7 @@ Function Show-PsLiskAbout
 	}
 	Write-Host ''
 	Write-Host '    Lisk   | Decentralized Application Platform. | https://lisk.io/'
-	Write-Host '    PSLisk | PowerShell Module for Lisk API.     | https://git.lisknode.io/PsLisk/'
+	Write-Host '    PSLisk | PowerShell Module for Lisk API.     | https://github.com/Gr33nDrag0n69/PsLisk/'
 	Write-Host ''
 }
 
