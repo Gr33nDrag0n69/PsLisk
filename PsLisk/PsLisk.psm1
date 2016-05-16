@@ -212,7 +212,7 @@ Function Get-PsLiskAccountBalance
         [parameter(Mandatory = $True)] [string] $Address
         )
 	
-	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/getBalance/?address='+$Address )
+	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts/getBalance/?address='+$Address )
 	if( $Output.success -eq $True )
 	{
 		$Output | Select-Object -Property Balance, UnconfirmedBalance
@@ -248,7 +248,7 @@ Function Get-PsLiskAccountPublicKey
         [parameter(Mandatory = $True)] [string] $Address
         )
 	
-	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/getPublicKey?address='+$Address )
+	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts/getPublicKey?address='+$Address )
 	if( $Output.success -eq $True ) { $Output.publicKey }
 }
 
@@ -274,7 +274,7 @@ Function Get-PsLiskAccountVote
         [parameter(Mandatory = $True)] [string] $Address
         )
 	
-	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/delegates/?address='+$Address )
+	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts/delegates/?address='+$Address )
 	if( $Output.success -eq $True ) { $Output.delegates }
 }
 
@@ -310,16 +310,16 @@ Function Open-PsLiskAccount
         [parameter(Mandatory = $True)] [string] $Secret
         )
 	
-	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'accounts/open/?secret='+$Secret )
+	$Private:Output = Invoke-PsLiskApiCall -Method Post -URI $( $Script:PsLisk_URI+'accounts/open' ) -Body @{secret=$Secret}
 	if( $Output.success -eq $True ) { $Output.account }
 }
 
 ##########################################################################################################################################################################################################
-
-Function Vote-PsLiskDelegate
+<#
+Function Vote-PsLiskDelegateVote
 {
 }
-
+#>
 ##########################################################################################################################################################################################################
 ### API Call: Loader
 ##########################################################################################################################################################################################################
@@ -327,6 +327,9 @@ Function Vote-PsLiskDelegate
 <#
 Get-PsLiskLoadingStatus						N/A (Priority 3)
 Get-PsLiskSyncStatus						N/A (Priority 3)
+
+# Proper Conversion
+(Invoke-WebRequest -Uri https://example.com/api/loader/status/sync  | ConvertFrom-Json).height | % {(Invoke-WebRequest -Uri https://example.com/api/blocks?height=$_ | ConvertFrom-Json).blocks.timestamp} | % {[timezone]::CurrentTimeZone.ToLocalTime(([datetime]'4/9/2015').Addseconds($_))}
 #>
 
 ##########################################################################################################################################################################################################
@@ -349,7 +352,7 @@ Send-PsLiskTransaction						N/A (Priority 5)
 <#
 Function Get-PsLiskPeer
 {
-	$Private:Output = Invoke-PsLiskApiCall -URI $( $Script:PsLisk_URI+'peers' )
+	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'peers' )
 	if( $Output.success -eq $True ) { $Output.peers }
 }
 #>
@@ -450,12 +453,26 @@ Function Invoke-PsLiskApiCall
 {
     [CmdletBinding()]
     Param(
-        [parameter(Mandatory = $True)] [string] $URI
+        [parameter(Mandatory = $True)] [string] $URI,
+		
+		[parameter(Mandatory = $True)]
+		[ValidateSet('Get','Post','Put')]
+		[string] $Method,
+		
+		[parameter(Mandatory = $False)] $Body = @{}
         )
 		
-	Write-Verbose "Invoke-PsLiskApiCall => $URI"
-	$Private:WebRequest = Invoke-WebRequest -Uri $URI
-
+	if( $Method -eq 'Get' )
+	{
+		Write-Verbose "Invoke-PsLiskApiCall [$Method] => $URI"
+		$Private:WebRequest = Invoke-WebRequest -Uri $URI -Method $Method
+	}
+	elseif( $Method -eq 'Post' )
+	{
+		Write-Verbose "Invoke-PsLiskApiCall [$Method] => $URI"
+		$Private:WebRequest = Invoke-WebRequest -Uri $URI -Method $Method -Body $Body
+	}
+	
 	if( ( $WebRequest.StatusCode -eq 200 ) -and ( $WebRequest.StatusDescription -eq 'OK' ) )
 	{
 		$Private:Result = $WebRequest | ConvertFrom-Json
