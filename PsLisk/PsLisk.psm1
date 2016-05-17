@@ -2,7 +2,7 @@
 
 Version :	0.1.1.0
 Author  :	Gr33nDrag0n <gr33ndrag0n@lisknode.io> v0.1.0.0 - v0.1.1.0
-History :	2016/05/14 - Release v0.1.1.0
+History :	2016/05/16 - Release v0.1.1.0
 			2016/05/02 - Release v0.1.0.1
 			2016/04/10 - Release v0.1.0.0
 			2016/04/08 - Creation of the module.
@@ -20,13 +20,13 @@ Set-PsLiskConfiguration						v0.1.1.0 + Help
 
 Get-PsLiskAccount							v0.1.1.0 + Help
 Get-PsLiskAccountBalance					v0.1.1.0 + Help
-Get-PsLiskAccountDelegate					N/A (Priority 10)
 Get-PsLiskAccountPublicKey					v0.1.1.0 + Help
 Get-PsLiskAccountVote						v0.1.1.0 + Help
 
 New-PsLiskAccount							v0.1.1.0 (Partial) + Help
 Open-PsLiskAccount							v0.1.1.0 + Help
-Vote-PsLiskDelegate							N/A (Priority 10)
+Add-PsLiskAccountVote						N/A (Priority 10)
+Remove-PsLiskAccountVote					N/A (Priority 10)
 
 # Loader #---------------------------------------------------------------------------
 
@@ -226,8 +226,10 @@ Function Get-PsLiskAccount
 .DESCRIPTION
 	Return an object with following properties:
 	
-	"balance": "Balance of account",
-	"unconfirmedBalance": "Unconfirmed balance of account"
+	"Balance":     "Balance of account",
+	"Balance_U":   "Unconfirmed balance of account"
+	"Balance_C":   "Balance of account / 100000000",
+	"Balance_UC":  "Unconfirmed balance of account / 100000000"
 	
 .PARAMETER Address
 	Address of account.
@@ -246,14 +248,13 @@ Function Get-PsLiskAccountBalance
 	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts/getBalance/?address='+$Address )
 	if( $Output.success -eq $True )
 	{
-		$Output | Select-Object -Property Balance, UnconfirmedBalance
+		New-Object PSObject -Property @{
+			'Balance_UC'  = $($Output.UnconfirmedBalance/100000000)
+			'Balance_C'   = $($Output.Balance/100000000)
+			'Balance_U'   = $Output.UnconfirmedBalance
+			'Balance'     = $Output.Balance
+			}
 	}
-}
-
-##########################################################################################################################################################################################################
-
-Function Get-PsLiskAccountDelegate
-{
 }
 
 ##########################################################################################################################################################################################################
@@ -306,7 +307,7 @@ Function Get-PsLiskAccountVote
         [parameter(Mandatory = $True)] [string] $Address
         )
 	
-	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts/delegates/?address='+$Address )
+	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts/delegates?address='+$Address )
 	if( $Output.success -eq $True ) { $Output.delegates }
 }
 
@@ -340,10 +341,10 @@ Function New-PsLiskAccount
 	$Private:Output = Invoke-PsLiskApiCall -Method Post -URI $( $Script:PsLisk_URI+'accounts/generatePublicKey' ) -Body @{secret=$Secret}
 	if( $Output.success -eq $True )
 	{
-		$Private:Obj = @{}
-		$Obj.PublicKey = $Output.publicKey
-		$Obj.Address = 'NOT CODED YET!'
-		$Obj
+		New-Object PSObject -Property @{
+			'PublicKey'  = $Output.publicKey
+			'Address'    = 'NOT CODED YET!'
+			}
 	}
 }
 
@@ -385,11 +386,50 @@ Function Open-PsLiskAccount
 }
 
 ##########################################################################################################################################################################################################
+
 <#
-Function Vote-PsLiskDelegateVote
-{
-}
+Vote for the selected delegates. Maximum of 33 delegates at once.
+PUT /api/accounts/delegates
+
+Request
+    "secret" : "Secret key of account",
+    "publicKey" : "Public key of sender account, to verify secret passphrase in wallet. Optional, only for UI",
+    "secondSecret" : "Secret key from second transaction, required if user uses second signature",
+    "delegates" : "Array of string in the following format: ["+DelegatePublicKey"] OR ["-DelegatePublicKey"]. Use + to UPvote, - to DOWNvote"
+
+Response
+    "success": true,
+    "transaction": {object}
 #>
+
+Function Add-PsLiskAccountVote
+{
+	# Add support for PublickKey, Address, Delegate Name
+	# Validate NbEntry >=1 && <= 33
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Vote for the selected delegates. Maximum of 33 delegates at once.
+PUT /api/accounts/delegates
+
+Request
+    "secret" : "Secret key of account",
+    "publicKey" : "Public key of sender account, to verify secret passphrase in wallet. Optional, only for UI",
+    "secondSecret" : "Secret key from second transaction, required if user uses second signature",
+    "delegates" : "Array of string in the following format: ["+DelegatePublicKey"] OR ["-DelegatePublicKey"]. Use + to UPvote, - to DOWNvote"
+
+Response
+    "success": true,
+    "transaction": {object}
+#>
+
+Function Remove-PsLiskAccountVote
+{
+	# Add support for PublickKey, Address, Delegate Name
+}
+
 ##########################################################################################################################################################################################################
 ### API Call: Loader
 ##########################################################################################################################################################################################################
