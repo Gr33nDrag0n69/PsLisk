@@ -18,13 +18,14 @@ Set-PsLiskConfiguration						v0.1.1.0 + Help
 
 # Accounts #-------------------------------------------------------------------------
 
-Get-PsLiskAccount							N/A (Priority 10)
-Get-PsLiskAccountBalance					N/A (Priority 6)
+Get-PsLiskAccount							v0.1.1.0 + Help
+Get-PsLiskAccountBalance					v0.1.1.0 + Help
 Get-PsLiskAccountDelegate					N/A (Priority 10)
-Get-PsLiskAccountPublicKey					N/A (Priority 10) ( Integrate Generate public key ? )
+Get-PsLiskAccountPublicKey					v0.1.1.0 + Help
 Get-PsLiskAccountVote						v0.1.1.0 + Help
 
-Open-PsLiskAccount							v0.1.1.0
+New-PsLiskAccount							v0.1.1.0 (Partial) + Help
+Open-PsLiskAccount							v0.1.1.0 + Help
 Vote-PsLiskDelegate							N/A (Priority 10)
 
 # Loader #---------------------------------------------------------------------------
@@ -183,8 +184,37 @@ Function Set-PsLiskConfiguration
 ### API Call: Accounts
 ##########################################################################################################################################################################################################
 
+<#
+.SYNOPSIS
+	API Call: Get informations about an account from address.
+	
+.DESCRIPTION
+	Return an object with following properties:
+	
+    "address": "Address of account. String",
+    "unconfirmedBalance": "Unconfirmed balance of account. Integer",
+    "balance": "Balance of account. Integer",
+    "publicKey": "Public key of account. Hex",
+    "unconfirmedSignature": "If account enabled second signature, but it's still not confirmed. Boolean: true or false",
+    "secondSignature": "If account enabled second signature. Boolean: true or false",
+    "secondPublicKey": "Second signature public key. Hex"
+	
+.PARAMETER Address
+	Address of account.
+	
+.EXAMPLE
+	Get-PsLiskAccount -Address 10829835517993670808L
+#>
+
 Function Get-PsLiskAccount
 {
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory = $True)] [string] $Address
+        )
+	
+	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'accounts?address='+$Address )
+	if( $Output.success -eq $True ) { $Output.account }
 }
 
 ##########################################################################################################################################################################################################
@@ -194,12 +224,13 @@ Function Get-PsLiskAccount
 	API Call: Get the balance of an account.
 	
 .DESCRIPTION
-	Return an ? for a given address.
+	Return an object with following properties:
 	
 	"balance": "Balance of account",
 	"unconfirmedBalance": "Unconfirmed balance of account"
 	
 .PARAMETER Address
+	Address of account.
 
 .EXAMPLE
 	Get-PsLiskAccountBalance -Address 10829835517993670808L
@@ -232,7 +263,7 @@ Function Get-PsLiskAccountDelegate
 	API Call: Get account public key.
 	
 .DESCRIPTION
-	Get the public key of an account. If the account does not exist the API call will return $NULL.
+	Get the public key of an account.
 	
 .PARAMETER Address
 	Address of account.
@@ -259,9 +290,10 @@ Function Get-PsLiskAccountPublicKey
 	API Call: Get votes by account address.
 	
 .DESCRIPTION
-	Return an Array of the votes for a given address.
+	Get votes statistics from other addresses to the account address.
 	
 .PARAMETER Address
+	Address of account.
 
 .EXAMPLE
 	Get-PsLiskAccountVote -Address 10829835517993670808L
@@ -282,10 +314,48 @@ Function Get-PsLiskAccountVote
 
 <#
 .SYNOPSIS
+	API Call: Create a new account.
+	
+.DESCRIPTION
+	A new account is created.
+	Return an object with the following properties:
+
+		"address": "Address of account. String",
+		"publicKey": "Public key of account. Hex",
+	
+.PARAMETER Secret
+	Secret key of account.
+	
+.EXAMPLE
+	New-PsLiskAccount -Secret 'soon control wild distance sponsor decrease cheap example avoid route ten pudding'
+#>
+
+Function New-PsLiskAccount
+{
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory = $True)] [string] $Secret
+        )
+	
+	$Private:Output = Invoke-PsLiskApiCall -Method Post -URI $( $Script:PsLisk_URI+'accounts/generatePublicKey' ) -Body @{secret=$Secret}
+	if( $Output.success -eq $True )
+	{
+		$Private:Obj = @{}
+		$Obj.PublicKey = $Output.publicKey
+		$Obj.Address = 'NOT CODED YET!'
+		$Obj
+	}
+}
+
+##########################################################################################################################################################################################################
+
+<#
+.SYNOPSIS
 	API Call: Get information about an account.
 	
 .DESCRIPTION
-	Get information about an account. Return an object with the following properties:
+	Get information about an account.
+	Return an object with the following properties:
 
 		"address": "Address of account. String",
 		"unconfirmedBalance": "Unconfirmed balance of account. Integer",
@@ -462,7 +532,7 @@ Function Invoke-PsLiskApiCall
 		[parameter(Mandatory = $False)] $Body = @{}
         )
 		
-	if( $Method -eq 'Get' )
+	if( ( $Method -eq 'Get' ) -or ( $Method -eq 'Put' ) )
 	{
 		Write-Verbose "Invoke-PsLiskApiCall [$Method] => $URI"
 		$Private:WebRequest = Invoke-WebRequest -Uri $URI -Method $Method
