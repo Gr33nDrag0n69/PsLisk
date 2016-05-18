@@ -1,14 +1,8 @@
 <##########################################################################################################################################
 
 Version :	0.1.1.0
-Author  :	Gr33nDrag0n <gr33ndrag0n@lisknode.io> v0.1.0.0 - v0.1.1.0
-History :	2016/05/16 - Release v0.1.1.0
-			2016/05/02 - Release v0.1.0.1
-			2016/04/10 - Release v0.1.0.0
-			2016/04/08 - Creation of the module.
-
-Reference:	https://github.com/LiskHQ/lisk-docs/blob/master/APIReference.md
-			https://lisk.io/documentation?i=lisk-docs/APIReference
+Author  :	Gr33nDrag0n <gr33ndrag0n@lisknode.io> v0.1.1.0
+History :	2016/05/17 - Release v0.1.1.0
 
 ##########################################################################################################################################>
 
@@ -69,3 +63,11 @@ Open-PsLiskAccount -Secret $MyAccount.Secret | FL *
 
 #Write-Host 'Remove-PsLiskAccountVote ???'
 #Remove-PsLiskAccountVote | FT
+
+#### API Call: Loader
+
+Write-Host 'Get-PsLiskLoadingStatus' -Foreground Cyan
+Get-PsLiskLoadingStatus | FL *
+
+Write-Host 'Get-PsLiskSyncStatus' -Foreground Cyan
+Get-PsLiskSyncStatus | FL *

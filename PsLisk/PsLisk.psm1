@@ -2,7 +2,7 @@
 
 Version :	0.1.1.0
 Author  :	Gr33nDrag0n <gr33ndrag0n@lisknode.io> v0.1.0.0 - v0.1.1.0
-History :	2016/05/16 - Release v0.1.1.0
+History :	2016/05/17 - Release v0.1.1.0
 			2016/05/02 - Release v0.1.0.1
 			2016/04/10 - Release v0.1.0.0
 			2016/04/08 - Creation of the module.
@@ -22,77 +22,54 @@ Get-PsLiskAccount							v0.1.1.0 + Help
 Get-PsLiskAccountBalance					v0.1.1.0 + Help
 Get-PsLiskAccountPublicKey					v0.1.1.0 + Help
 Get-PsLiskAccountVote						v0.1.1.0 + Help
+Get-PsLiskAccountSecondSignature			Struct Only
 
 New-PsLiskAccount							v0.1.1.0 (Partial) + Help
 Open-PsLiskAccount							v0.1.1.0 + Help
-Add-PsLiskAccountVote						N/A (Priority 10)
-Remove-PsLiskAccountVote					N/A (Priority 10)
+Add-PsLiskAccountVote						Struct Only
+Remove-PsLiskAccountVote					Struct Only
+Add-PsLiskAccountSecondSignature			Struct Only
 
 # Loader #---------------------------------------------------------------------------
 
-Get-PsLiskLoadingStatus						N/A (Priority 3)
-Get-PsLiskSyncStatus						N/A (Priority 3)
+Get-PsLiskLoadingStatus						Struct Only
+Get-PsLiskSyncStatus						Struct Only
 
 # Transactions #---------------------------------------------------------------------
 
-Get-PsLiskTransaction						N/A (Priority 3)
-Get-PsLiskTransactionList					N/A (Priority 5)
-Get-PsLiskTransactionUnconfirmed			N/A (Priority 3)
-Get-PsLiskTransactionUnconfirmedList		N/A (Priority 3)
+Get-PsLiskTransaction						Struct Only
+Get-PsLiskTransactionList					Struct Only
+Get-PsLiskTransactionUnconfirmed			Struct Only
+Get-PsLiskTransactionUnconfirmedList		Struct Only
 
-Send-PsLiskTransaction						N/A (Priority 5)
+Send-PsLiskTransaction						Struct Only
 
 # Peers #----------------------------------------------------------------------------
 
-Get-PsLiskPeer								N/A (Priority 10)
-Get-PsLiskPeerList							N/A (Priority 10)
-Get-PsLiskPeerListVersion					N/A (Priority 10)
+Get-PsLiskPeer								Struct Only
+Get-PsLiskPeerList							Struct Only
+Get-PsLiskPeerListVersion					Struct Only
 
 # Blocks #---------------------------------------------------------------------------
 
-Get-PsLiskBlock								N/A (Priority 5)
-Get-PsLiskBlockList							N/A (Priority 5)
-Get-PsLiskBlockFee							N/A (Priority 5)
-Get-PsLiskBlockHeight						N/A (Priority 5)
-Get-PsLiskBlockForged						N/A (Priority 5)
-
-# Signatures #-----------------------------------------------------------------------
-
-Get-PsLiskSignature							N/A (Priority 3)
-
-Add-PsLiskSecondSignature					N/A (Priority 3)
+Get-PsLiskBlock								Struct Only
+Get-PsLiskBlockList							Struct Only
+Get-PsLiskBlockFee							Struct Only
+Get-PsLiskBlockHeight						Struct Only
+Get-PsLiskBlockForged						Struct Only
 
 # Delegates #------------------------------------------------------------------------
 
-Get-PsLiskDelegate							N/A (Priority 8)
-Get-PsLiskDelegateList						N/A (Priority 8)
-Get-PsLiskDelegateVoterList					N/A (Priority 8)
+Get-PsLiskDelegate							Struct Only
+Get-PsLiskDelegateList						Struct Only
+Get-PsLiskDelegateVoterList					Struct Only
 
-Enable-PsLiskDelegate						N/A (Priority 8)
-Enable-PsLiskDelegateForging				N/A (Priority 8)
-Disable-PsLiskDelegateForging				N/A (Priority 8)
+Enable-PsLiskDelegate						Struct Only
+Or
+New-PsLiskDelegate							Struct Only
 
-# Messages #-------------------------------------------------------------------------
-
-Send-PsLiskMessage							N/A (Priority 3)
-
-# Usernames #------------------------------------------------------------------------
-
-Register-PsLiskUsername						N/A (Priority 0, Deprecated)
-
-# Dapps #----------------------------------------------------------------------------
-
-Get-PsLiskDappInstalledList					N/A (Priority 3)
-Get-PsLiskDappInstalledListByIds			N/A (Priority 3)
-
-Register-PsLiskDapp							N/A (Priority 3)
-
-Search-PsLiskDappStore						N/A (Priority 3)
-Install-PsLiskDapp							N/A (Priority 3)
-Uninstall-PsLiskDapp						N/A (Priority 3)
-
-Start-PsLiskDapp							N/A (Priority 3)
-Stop-PsLiskDapp								N/A (Priority 3)
+Enable-PsLiskDelegateForging				Struct Only
+Disable-PsLiskDelegateForging				Struct Only
 
 # Multi-Signature #------------------------------------------------------------------
 
@@ -105,6 +82,8 @@ Sign-PsLiskMultiSigTransaction				N/A (Priority 3)
 #### Internal Functions #############################################################
 
 Invoke-PsLiskApiCall						v0.l.1.0
+Export-PsLiskCsv							N/A (Priority 5)
+Export-PsLiskJson							N/A (Priority 5)
 
 #### Misc. Functions ################################################################
 
@@ -119,9 +98,6 @@ Show-PsLiskAbout							v0.l.0.0
 ##########################################################################################################################################>
 
 $Script:PsLisk_URI = 'https://testnet.lisk.io/api/'
-$Script:PsLisk_Address = '10829835517993670808L'
-$Script:PsLisk_PublicKey = ''
-$Script:PsLisk_Passphrase = ''
 
 ##########################################################################################################################################################################################################
 ### PsLisk Configuration
@@ -158,26 +134,10 @@ Function Set-PsLiskConfiguration
 {
     [CmdletBinding()]
     Param(
-        [parameter(Mandatory = $False)] [string] $URI,
-		[parameter(Mandatory = $False)] [string] $Address='',
-		[parameter(Mandatory = $False)] [string] $Passphrase=''
+        [parameter(Mandatory = $True)] [string] $URI
         )
 		
-	if( $URI -ne '' )
-	{
-		$Script:PsLisk_URI = $URI
-	}
-	
-	if( $Address -ne '' )
-	{
-		$Script:PsLisk_Address = $Address
-		$Script:PsLisk_PublicKey = $Address
-	}
-	
-	if( $Passphrase -ne '' )
-	{
-		$Script:PsLisk_Passphrase = $Passphrase
-	}
+	$Script:PsLisk_URI = $URI
 }
 
 ##########################################################################################################################################################################################################
@@ -314,6 +274,31 @@ Function Get-PsLiskAccountVote
 ##########################################################################################################################################################################################################
 
 <#
+Get second signature of account.
+
+GET /api/signatures/get?id=id
+
+id: Id of signature. (String)
+
+Response
+    "signature" : {
+        "id" : "Id. String",
+        "timestamp" : "TimeStamp. Integer",
+        "publicKey" : "Public key of signature. hex",
+        "generatorPublicKey" : "Public Key of Generator. hex",
+        "signature" : [array],
+        "generationSignature" : "Generation Signature"
+    }
+#>
+
+Function Get-PsLiskAccountSecondSignature
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
 .SYNOPSIS
 	API Call: Create a new account.
 	
@@ -431,129 +416,619 @@ Function Remove-PsLiskAccountVote
 }
 
 ##########################################################################################################################################################################################################
+
+<#
+Add second signature to account.
+
+PUT /api/signatures
+
+Request
+  "secret": "secret key of account",
+  "secondsecret": "second key of account",
+  "publicKey": "optional, to verify valid secret key and account"
+
+Response
+  "transactionId": "id of transaction with new signature",
+  "publicKey": "Public key of signature. hex"
+#>
+
+Function Add-PsLiskSecondSignature
+{
+
+}
+
+##########################################################################################################################################################################################################
 ### API Call: Loader
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskLoadingStatus						N/A (Priority 3)
-Get-PsLiskSyncStatus						N/A (Priority 3)
+Returns account's delegates by address.
 
-# Proper Conversion
-(Invoke-WebRequest -Uri https://example.com/api/loader/status/sync  | ConvertFrom-Json).height | % {(Invoke-WebRequest -Uri https://example.com/api/blocks?height=$_ | ConvertFrom-Json).blocks.timestamp} | % {[timezone]::CurrentTimeZone.ToLocalTime(([datetime]'4/9/2015').Addseconds($_))}
+GET /api/loader/status
+
+   "success": true,
+   "loaded": "Is blockchain loaded? Boolean: true or false",
+   "now": "Last block loaded during loading time. Integer",
+   "blocksCount": "Total blocks count in blockchain at loading time. Integer"
 #>
+
+Function Get-PsLiskLoadingStatus
+{   
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get the synchronisation status of the client.
+
+GET /api/loader/status/sync
+
+Response
+   "success": true,
+   "sync": "Is wallet is syncing with another peers? Boolean: true or false",
+   "blocks": "Number of blocks remaining to sync. Integer",
+   "height": "Total blocks in blockchain. Integer"
+#>
+
+Function Get-PsLiskSyncStatus
+{
+	# Proper Conversion ?
+	#(Invoke-WebRequest -Uri https://example.com/api/loader/status/sync  | ConvertFrom-Json).height | % {(Invoke-WebRequest -Uri https://example.com/api/blocks?height=$_ | ConvertFrom-Json).blocks.timestamp} | % {[timezone]::CurrentTimeZone.ToLocalTime(([datetime]'4/9/2015').Addseconds($_))}
+
+}
 
 ##########################################################################################################################################################################################################
 ### API Call: Transactions
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskTransaction						N/A (Priority 3)
-Get-PsLiskTransactionList					N/A (Priority 5)
-Get-PsLiskTransactionUnconfirmed			N/A (Priority 3)
-Get-PsLiskTransactionUnconfirmedList		N/A (Priority 3)
+Get transaction matched by id.
 
-Send-PsLiskTransaction						N/A (Priority 5)
+GET /api/transactions/get?id=id
+
+id: String of transaction (String)
+
+Response
+	"transaction": {
+		"id": "Id of transaction. String",
+		"type": "Type of transaction. Integer",
+		"subtype": "Subtype of transaction. Integer",
+		"timestamp": "Timestamp of transaction. Integer",
+		"senderPublicKey": "Sender public key of transaction. Hex",
+		"senderId": "Address of transaction sender. String",
+		"recipientId": "Recipient id of transaction. String",
+		"amount": "Amount. Integer",
+		"fee": "Fee. Integer",
+		"signature": "Signature. Hex",
+		"signSignature": "Second signature. Hex",
+		"companyGeneratorPublicKey": "If transaction was sent to merchant, provided comapny generator public key to find company. Hex",
+		"confirmations": "Number of confirmations. Integer"
+	}
 #>
+
+Function Get-PsLiskTransaction
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get list of transactions
+
+Transactions list matched by provided parameters.
+
+GET /api/transactions?blockId=blockId&senderId=senderId&recipientId=recipientId&limit=limit&offset=offset&orderBy=field
+
+    blockId: Block id of transaction. (String)
+    senderId: Sender address of transaction. (String)
+    recipientId: Recipient of transaction. (String)
+    limit: Limit of transaction to send in response. Default is 20. (Number)
+    offset: Offset to load. (Integer number)
+    orderBy: Name of column to order. After column name must go "desc" or "acs" to choose order type, prefix for column name is t_. Example: orderBy=t_timestamp:desc (String)
+
+All parameters joins by "OR".
+
+Example:
+/api/transactions?blockId=10910396031294105665&senderId=6881298120989278452C&orderBy=timestamp:desc looks like: blockId=10910396031294105665 OR senderId=6881298120989278452C
+
+Response
+	"transactions": [
+		"list of transactions objects"
+#>
+
+Function Get-PsLiskTransactionList
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get unconfirmed transaction by id.
+
+GET /api/transactions/unconfirmed/get?id=id
+
+id: String of transaction (String)
+
+Response
+	"transaction": {
+		"id": "Id of transaction. String",
+		"type": "Type of transaction. Integer",
+		"subtype": "Subtype of transaction. Integer",
+		"timestamp": "Timestamp of transaction. Integer",
+		"senderPublicKey": "Sender public key of transaction. Hex",
+		"senderId": "Address of transaction sender. String",
+		"recipientId": "Recipient id of transaction. String",
+		"amount": "Amount. Integer",
+		"fee": "Fee. Integer",
+		"signature": "Signature. Hex",
+		"signSignature": "Second signature. Hex",
+		"confirmations": "Number of confirmations. Integer"
+#>
+
+Function Get-PsLiskTransactionUnconfirmed
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get list of unconfirmed transactions
+
+GET /api/transactions/unconfirmed
+
+Response
+    "transactions" : [list of transaction objects]
+#>
+
+Function Get-PsLiskTransactionUnconfirmedList
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Send transaction to broadcast network.
+
+PUT /api/transactions
+
+Request
+    "secret" : "Secret key of account",
+    "amount" : /* Amount of transaction * 10^8. Example: to send 1.1234 LISK, use 112340000 as amount */,
+    "recipientId" : "Recipient of transaction. Address or username.",
+    "publicKey" : "Public key of sender account, to verify secret passphrase in wallet. Optional, only for UI",
+    "secondSecret" : "Secret key from second transaction, required if user uses second signature"
+
+Response
+	"transactionId": "id of added transaction"
+#>
+
+Function Send-PsLiskTransaction
+{
+
+}
 
 ##########################################################################################################################################################################################################
 ### API Call: Peers
 ##########################################################################################################################################################################################################
 
 <#
+Get peer
+
+Get peer by ip and port
+
+GET /api/peers/get?ip=ip&port=port
+
+    ip: Ip of peer. (String)
+    port: Port of peer. (Integer)
+
+Response
+
+{
+  "success": true,
+  "peer": "peer object"
+}
+#>
+
 Function Get-PsLiskPeer
 {
 	$Private:Output = Invoke-PsLiskApiCall -Method Get -URI $( $Script:PsLisk_URI+'peers' )
 	if( $Output.success -eq $True ) { $Output.peers }
 }
-#>
+
+##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskPeer								N/A (Priority 10)
-Get-PsLiskPeerList							N/A (Priority 10)
-Get-PsLiskPeerListVersion					N/A (Priority 10)
+Get peers list
+
+Get peers list by parameters.
+
+GET /api/peers?state=state&os=os&shared=shared&version=version&limit=limit&offset=offset&orderBy=orderBy
+
+    state: State of peer. 1 - disconnected. 2 - connected. 0 - banned. (String)
+    os: OS of peer. (String)
+    shared: Is peer shared? Boolean: true or false. (String)
+    version: Version of peer. (String)
+    limit: Limit to show. Max limit is 100. (Integer)
+    offset: Offset to load. (Integer)
+    orderBy: Name of column to order. After column name must go "desc" or "acs" to choose order type. (String)
+
+All parameters joins by "OR".
+
+Example:
+/api/peers?state=1&version=0.1.8 looks like: state=1 OR version=0.1.8
+
+Response
+  "peers": ["list of peers"]
 #>
+
+Function Get-PsLiskPeerList
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get peer version and build time
+
+GET /api/peers/version
+
+Response
+  "version": "version of Lisk",
+  "build": "time of build"
+#>
+
+Function Get-PsLiskPeerListVersion
+{
+
+}
 
 ##########################################################################################################################################################################################################
 ### API Call: Blocks
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskBlock								N/A (Priority 5)
-Get-PsLiskBlockList							N/A (Priority 5)
-Get-PsLiskBlockFee							N/A (Priority 5)
-Get-PsLiskBlockHeight						N/A (Priority 5)
-Get-PsLiskBlockForged						N/A (Priority 5)
+Get block by id.
+
+GET /api/blocks/get?id=id
+
+    id: Id of block.
+
+Response
+    "block": {
+        "id": "Id of block. String",
+        "version": "Version of block. Integer",
+        "timestamp": "Timestamp of block. Integer",
+        "height": "Height of block. Integer",
+        "previousBlock": "Previous block id. String",
+        "numberOfRequests": "Not using now. Will be removed in 0.2.0",
+        "numberOfTransactions": "Number of transactions. Integer",
+        "numberOfConfirmations": "Not using now.",
+        "totalAmount": "Total amount of block. Integer",
+        "totalFee": "Total fee of block. Integer",
+        "payloadLength": "Payload length of block. Integer",
+        "requestsLength": "Not using now. Will be removed in 0.2.0",
+        "confirmationsLength": "Not using now.,
+        "payloadHash": "Payload hash. Hex",
+        "generatorPublicKey": "Generator public key. Hex",
+        "generatorId": "Generator id. String.",
+        "generationSignature": "Generation signature. Not using. Will be removed in 0.2.0",
+        "blockSignature": "Block signature. Hex"
+    }
 #>
 
-##########################################################################################################################################################################################################
-### API Call: Signatures
+Function Get-PsLiskBlock
+{
+
+}
+
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskSignature							N/A (Priority 3)
+Get all blocks.
 
-Add-PsLiskSecondSignature					N/A (Priority 3)
+GET /api/blocks?generatorPublicKey=generatorPublicKey&height=height&previousBlock=previousBlock&totalAmount=totalAmount&totalFee=totalFee&limit=limit&offset=offset&orderBy=orderBy
+
+All parameters joins by OR.
+
+Example:
+/api/blocks?height=100&totalAmount=10000 looks like: height=100 OR totalAmount=10000
+
+    totalFee: total fee of block. (Integer)
+    totalAmount: total amount of block. (Integer)
+    previousBlock: previous block of need block. (String)
+    height: height of block. (Integer)
+    generatorPublicKey: generator id of block in hex. (String)
+    limit: limit of blocks to add to response. Default to 20. (Integer)
+    offset: offset to load blocks. (Integer)
+    orderBy: field name to order by. Format: fieldname:orderType. Example: height:desc, timestamp:asc (String)
+
+Response
+  "blocks": [
+    "array of blocks"
+  ]
 #>
+
+Function Get-PsLiskBlockList
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get blockchain fee percent
+
+GET /api/blocks/getFee
+
+Response
+  "fee": "fee percent"
+#>
+
+Function Get-PsLiskBlockFee
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get blockchain height.
+
+GET /api/blocks/getHeight
+
+Response
+  "height": "Height of blockchain. Integer"
+#>
+
+Function Get-PsLiskBlockHeight
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get amount forged by account.
+
+GET /api/delegates/forging/getForgedByAccount?generatorPublicKey=generatorPublicKey
+
+generatorPublicKey: generator id of block in hex. (String)
+
+Response
+  "sum": "Forged amount. Integer"
+#>
+
+Function Get-PsLiskBlockForged
+{
+
+}
 
 ##########################################################################################################################################################################################################
 ### API Call: Delegates
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskDelegate							N/A (Priority 8)
-Get-PsLiskDelegateList						N/A (Priority 8)
-Get-PsLiskDelegateVoterList					N/A (Priority 8)
+Get delegate by transaction id.
 
-Enable-PsLiskDelegate						N/A (Priority 8)
-Enable-PsLiskDelegateForging				N/A (Priority 8)
-Disable-PsLiskDelegateForging				N/A (Priority 8)
+GET /api/delegates/get?id=transactionId
+
+transactionId: Id of transaction where delegated was putted. (String)
+
+Response
+    "delegate":
+        "username": "username of delegate",
+        "transactionId": "transaction id",
+        "votes": "amount of stake voted for this delegate"
 #>
 
-##########################################################################################################################################################################################################
-### API Call: Messages
+Function Get-PsLiskDelegate
+{
+
+}
+
 ##########################################################################################################################################################################################################
 
 <#
-Send-PsLiskMessage							N/A (Priority 3)
+Get delegates list.
+
+GET /api/delegates?limit=limit&offset=offset&orderBy=orderBy
+
+    limit: Limit to show. Integer. Maximum is 100. (Integer)
+    offset: Offset (Integer)
+    orderBy: Order by field (String)
+
+Response
+  delegates objects array"
+	Object includes:
+		delegateId,
+		address,
+		publicKey,
+		vote (# of votes),
+		producedBlocks,
+		missedBlocks,
+		rate,
+		productivity
 #>
 
-##########################################################################################################################################################################################################
-### API Call: Usernames
+Function Get-PsLiskDelegateList
+{
+
+}
+
 ##########################################################################################################################################################################################################
 
 <#
-Register-PsLiskUsername						N/A (Priority 0, Deprecated)
+Get voters of delegate.
+
+GET /api/delegates/voters?publicKey=publicKey
+
+publicKey: Public key of delegate. (String)
+
+Response
+  "accounts": [
+    "array of accounts who vote for delegate"
+  ]
 #>
 
-##########################################################################################################################################################################################################
-### API Call: Dapps
+Function Get-PsLiskDelegateVoterList
+{
+
+}
+
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskDappInstalledList					N/A (Priority 3)
-Get-PsLiskDappInstalledListByIds			N/A (Priority 3)
+Enable delegate on account
+Calls for delegates functional.
 
-Register-PsLiskDapp							N/A (Priority 3)
+PUT /api/delegates
 
-Search-PsLiskDappStore						N/A (Priority 3)
-Install-PsLiskDapp							N/A (Priority 3)
-Uninstall-PsLiskDapp						N/A (Priority 3)
+Request
+  "secret": "Secret key of account",
+  "secondSecret": "Second secret of account",
+  "username": "Username of delegate. String from 1 to 20 characters."
 
-Start-PsLiskDapp							N/A (Priority 3)
-Stop-PsLiskDapp								N/A (Priority 3)
+Response
+  "transaction": "transaction object"
+
+Function Enable-PsLiskDelegate
+{
+
+}
+
+OR
+
+Function New-PsLiskDelegate
+{
+
+}
 #>
+
+##########################################################################################################################################################################################################
+
+<#
+Enable forging on delegate
+
+POST /api/delegates/forging/enable
+
+Request
+  "secret": "secret key of delegate account"
+
+Response
+  "address": "address"
+#>
+
+Function Enable-PsLiskDelegateForging
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Disable forging on delegate
+
+POST /api/delegates/forging/disable
+
+Request
+  "secret": "secret key of delegate account"
+
+Response
+  "address": "address"
+#>
+
+Function Disable-PsLiskDelegateForging
+{
+
+}
 
 ##########################################################################################################################################################################################################
 ### API Call: Multi-Signature
 ##########################################################################################################################################################################################################
 
 <#
-Get-PsLiskMultiSigPendingTransactionList	N/A (Priority 3)
-Get-PsLiskMultiSigAccountList				N/A (Priority 3)
+Get pending multi-signature transactions
+Return multisig transaction that waiting for your signature.
 
-New-PsLiskMultiSigAccount					N/A (Priority 3)
-Sign-PsLiskMultiSigTransaction				N/A (Priority 3)
+GET /api/multisignatures/pending?publicKey=publicKey
+
+publicKey: Public key of account (String)
+
+Response
+    "transactions": ['array of transactions to sign']
 #>
+
+Function Get-PsLiskMultiSigPendingTransactionList
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Get accounts of multisignature.
+
+GET /api/multisignatures/accounts?publicKey=publicKey
+
+publicKey: Public key of multi-signature account (String)
+
+Response
+  "accounts": "array of accounts"
+#>
+
+Function Get-PsLiskMultiSigAccountList
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Create multi-signature account
+
+PUT /api/multisignatures
+
+Request
+    "secret": "your secret. string. required.",
+    "lifetime": "request lifetime in hours (1-24). required.",
+    "min": "minimum signatures needed to approve a tx or a change (1-15). integer. required",
+    "keysgroup": [array of public keys strings]. add '+' before publicKey to add an account or '-' to remove. required. 
+
+Response
+  "transactionId": "transaction id"
+#>
+
+Function New-PsLiskMultiSigAccount
+{
+
+}
+
+##########################################################################################################################################################################################################
+
+<#
+Sign transaction that wait for your signature.
+
+POST /api/multisignatures/sign
+
+Request
+  "secret": "your secret. string. required.",
+  "publicKey": "public key of your account. string. optional.",
+  "transactionId": "id of transaction to sign"
+
+Response
+  "transactionId": "transaction id"
+#>
+
+Function Sign-PsLiskMultiSigTransaction
+{
+
+}
 
 ##########################################################################################################################################################################################################
 ### Internal Functions
@@ -647,9 +1122,9 @@ Function Show-PsLiskDelegateUsername
 	Write-Host ''
 }
 #>
+
 ##########################################################################################################################################################################################################
 
-# Inspired by lisk-network-monitor made by fix (fixcrypt)
 <#
 Function Start-PsLiskNetworkMonitor
 {
@@ -681,57 +1156,8 @@ Function Start-PsLiskNetworkMonitor
 	Write-Host "Peers v0.1.2         => $Peers_Count_012"
 	Write-Host "Peers v0.1.3         => $Peers_Count_013"
 	Write-Host "Peers v?.?.?         => $Peers_Count_000"
-	$Peers_000 | FT
-
 	
-ip              port state os                            sharePort version
---              ---- ----- --                            --------- -------
-83.136.249.126  7000     2 linux3.13.0-83-generic                1 0.1.2
-45.32.236.171   7000     2 linux3.13.0-85-generic                1 0.1.2
-104.156.254.116 7000     2 linux3.13.0-85-generic                1 0.1.2
-108.61.190.139  7000     2 linux3.13.0-83-generic                1 0.1.2
-104.238.170.122 7000     2 linux3.13.0-85-generic                1 0.1.2
-40.118.167.63      1     1 linux3.2.0-4-amd64                    0 0.1.1
-
-      function checkPeers(){
-        window.syncdata=[];
-        $.get("https://login.lisk.io/api/peers").success(function(data){
-          data.peers.forEach(function(peer){
-            $.get("http://"+peer.ip+":"+peer.port+"/api/loader/status/sync").success(function(data2){
-              data2.ip=peer.ip;
-              window.syncdata.push(data2);
-            });
-          });
-        });
-        $.get("https://login.lisk.io/api/loader/status/sync").success(function(data2){
-          data2.ip="<span class='text-danger'>login.lisk.io</span>";
-          window.syncdata.push(data2);
-        });
-        setTimeout(function(){
-          displayPeers();
-          checkPeers();
-        }, 10000);
-      }
-	  
-      function checkPeers(){
-        window.syncdata=[];
-        $.get("https://login.lisk.io/api/peers").success(function(data){
-          data.peers.forEach(function(peer){
-            $.get("http://"+peer.ip+":"+peer.port+"/api/loader/status/sync").success(function(data2){
-              data2.ip=peer.ip;
-              window.syncdata.push(data2);
-            });
-          });
-        });
-        $.get("https://login.lisk.io/api/loader/status/sync").success(function(data2){
-          data2.ip="<span class='text-danger'>login.lisk.io</span>";
-          window.syncdata.push(data2);
-        });
-        setTimeout(function(){
-          displayPeers();
-          checkPeers();
-        }, 20000);
-
+	$Peers_000 | FT
 }
 #>
 
