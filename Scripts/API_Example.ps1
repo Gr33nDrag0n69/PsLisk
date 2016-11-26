@@ -12,7 +12,7 @@ History :	2016/11/26 - Release v0.2.0.0
 # Add Param: -NodeList
 # Add Param: -NoBanner
 
-
+Clear-Host
 
 ###########################################################################################################################################
 #### Config File Verification
@@ -25,16 +25,17 @@ $Private:MyConfig = Get-Content .\Config-Gr33nDrag0n.json | ConvertFrom-Json
 
 # Test Required Account Values
 
-#
+
 $Private:MyAccount = $MyConfig.Account
+Write-Host '#### Accounts #################################################################'
+$MyAccount
 
 ###########################################################################################################################################
-#### ServerList Verification
 
-# Test 
-Clear-Host
 
 $Private:MyServerList = $MyConfig.Servers
+Write-Host '#### ServerList ###############################################################'
+$MyServerList
 
 ###########################################################################################################################################
 #### Module Verification
@@ -64,30 +65,30 @@ Show-PsLiskAbout
 #### Configure API Server
 
 Write-Host 'Set-PsLiskConfiguration -URI "https://login.lisk.io/api/"' -Foreground Cyan
-Set-PsLiskConfiguration -URI $MyServerList[3]
+Set-PsLiskConfiguration -URI $MyServerList[0]
 Write-Host ''
 
 #### API Call: Accounts
 
 Write-Host 'Get-PsLiskAccount -Address $Address' -Foreground Cyan
-Get-PsLiskAccount -Address $MyAccount.Address | FL *
+Get-PsLiskAccount -Address $MyAccount.DelegateAddress | FL *
 
 Write-Host 'Get-PsLiskAccountBalance -Address $Address' -Foreground Cyan
-Get-PsLiskAccountBalance -Address $MyAccount.Address | FL *
+Get-PsLiskAccountBalance -Address $MyAccount.DelegateAddress | FL *
 
 Write-Host 'Get-PsLiskAccountPublicKey -Address $Address' -Foreground Cyan
 Write-Host ''
-Get-PsLiskAccountPublicKey -Address $MyAccount.Address
+Get-PsLiskAccountPublicKey -Address $MyAccount.DelegateAddress
 Write-Host ''
 
 Write-Host 'Get-PsLiskAccountVote -Address $Address' -Foreground Cyan
-Get-PsLiskAccountVote -Address $MyAccount.Address | FL *
+Get-PsLiskAccountVote -Address $MyAccount.DelegateAddress | FL *
 
 Write-Host "New-PsLiskAccount -Secret 'New Account Password'" -Foreground Cyan
 New-PsLiskAccount -Secret 'New Account Password' | FL *
 
 Write-Host 'Open-PsLiskAccount -Secret $Secret' -Foreground Cyan
-Open-PsLiskAccount -Secret $MyAccount.Secret | FL *
+Open-PsLiskAccount -Secret $MyAccount.DelegateSecret | FL *
 
 #Write-Host 'Add-PsLiskAccountVote ???'
 #Add-PsLiskAccountVote | FT

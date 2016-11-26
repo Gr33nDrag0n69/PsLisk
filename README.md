@@ -1,5 +1,8 @@
 # PSLisk
 
+WARNING - THIS MODULE IS STILL VERY INCOMPLETE COMPARED TO THE FULL EXTENT OF LISK API POSSIBILITIES
+
+
 PowerShell Module for Lisk API.
 
 Lisk is a Decentralized Application Platform. See https://lisk.io/ for more infos.
