@@ -1,19 +1,28 @@
 <##########################################################################################################################################
 
-Version :	0.1.1.0
-Author  :	Gr33nDrag0n <gr33ndrag0n@lisknode.io> v0.1.1.0
-History :	2016/05/17 - Release v0.1.1.0
+Version :	0.2.0.0
+Author  :	Gr33nDrag0n <gr33ndrag0n@lisknode.io> v0.1.1.0 - v0.2.0.0
+History :	2016/11/26 - Release v0.2.0.0
+          2016/05/17 - Release v0.1.1.0
 
 ##########################################################################################################################################>
 
+# MANDATORY: EDIT THIS CONFIG.
+
+$Private:MyAccount = $MyConfig.Account
+#$Private:MyServerList = $MyConfig.Servers
+
+
 Clear-Host
 
-$Private:MyConfig = Get-Content .\PsLiskConfig.json | ConvertFrom-Json
-$Private:MyAccount = $MyConfig.Account
-$Private:MyServerList = $MyConfig.Servers
+#$Private:MyConfig = Get-Content .\PsLiskConfig.json | ConvertFrom-Json
+#$Private:MyAccount = $MyConfig.Account
+#$Private:MyServerList = $MyConfig.Servers
 
+# If module already in memory, remove it from memory. (Faster Dev.)
 if( Get-Module -Name PsLisk ) { Remove-Module PsLisk }
 
+# Load PsLisk module.
 if( Get-Module -ListAvailable | Where-Object { $_.Name -eq 'PsLisk' } )
 {
 	#Import-Module PsLisk –DisableNameChecking
