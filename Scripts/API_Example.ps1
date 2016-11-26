@@ -7,17 +7,37 @@ History :	2016/11/26 - Release v0.2.0.0
 
 ##########################################################################################################################################>
 
-# MANDATORY: EDIT THIS CONFIG.
 
+# Add Param: -Config
+# Add Param: -NodeList
+# Add Param: -NoBanner
+
+
+
+###########################################################################################################################################
+#### Config File Verification
+
+# Test Path
+#if( Test-Path 
+
+# Load in memory
+$Private:MyConfig = Get-Content .\Config-Gr33nDrag0n.json | ConvertFrom-Json
+
+# Test Required Account Values
+
+#
 $Private:MyAccount = $MyConfig.Account
-#$Private:MyServerList = $MyConfig.Servers
 
+###########################################################################################################################################
+#### ServerList Verification
 
+# Test 
 Clear-Host
 
-#$Private:MyConfig = Get-Content .\PsLiskConfig.json | ConvertFrom-Json
-#$Private:MyAccount = $MyConfig.Account
-#$Private:MyServerList = $MyConfig.Servers
+$Private:MyServerList = $MyConfig.Servers
+
+###########################################################################################################################################
+#### Module Verification
 
 # If module already in memory, remove it from memory. (Faster Dev.)
 if( Get-Module -Name PsLisk ) { Remove-Module PsLisk }
@@ -35,6 +55,8 @@ else
 	Exit
 }
 
+
+###########################################################################################################################################
 #### Show Banner
 
 Show-PsLiskAbout

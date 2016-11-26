@@ -1,0 +1,21 @@
+{
+	"Account": {
+  
+		"DelegateName":       "",
+		"DelegateAddress":    "",
+		"DelegatePublicKey":  "",
+		"DelegateSecret":     "",
+    
+		"SenderAddress":      "",
+		"SenderPublicKey":    "",
+		"SenderSecret":       "",
+    
+		"RecipientAddress":   "",
+		"RecipientPublicKey": "",
+		"RecipientSecret":    ""
+  },
+	"Servers": [
+		"https://testnet-wallet.lisknode.io/api/",
+		"http://testnet-snapshot.lisknode.io:7000/api/"
+		]
+}
